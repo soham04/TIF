@@ -1,0 +1,1497 @@
+{
+	"info": {
+		"_postman_id": "0af40a82-d682-4228-8e67-2b9646e77859",
+		"name": "The Internet Folks: SDE Intern Assignment [002]",
+		"description": "## About\n\nYou run a SaaS Platform that enables user to make their communities and add members to it.\n\nEach user, can create a community and (automatically) gets assigned the `Community Admin` role. They can add other users to the community who get assigned the `Community Member` role.\n\n### User Stories (Features)\n\n- Module: Authentication\n    - Feature: User should be able to signup using valid name, email and strong password.\n    - Feature: User should be able to signin using valid credentials.\n- Module: Community\n    - Feature: User should be able to see all communities.\n    - Feature: User should be able to create a community.\n- Module: Moderation\n    - Feature: User should be able to see all community members.\n    - Feature: User should be able to add a user as member.\n    - Feature: User should be able to remove a member from community.\n\n### Problem Statement\n\n- You need to build the APIs that adheres to above user stories.\n- The Role names are strict.\n- The API URLs and Response Structure is fixed.\n- The field attributes and table names are strict as well.\n- Addition of field for storing IDs when using NoSQL is allowed.\n- Validations for each API must be carried out.\n    \n\n### Tech Stack\n\n- Language: Node v14+\n- Database: Postgres / MySQL / MongoDB\n- ORM: Sequelize / Prisma / Mongoose / MongoDB Native Driver\n- Library: [@theinternetfolks/snowflake](https://npmjs.com/package/@theinternetfolks/snowflake) to generate unique IDs instead of autoincrement, UUID or MongoDB ObjectID\n    \n\nYou are **free to choose any database** and ORM that goes with it for your use.\n\nMake sure to see all the examples including `Success` and `Error` example, by going to any \"Example Request\" and selecting from the dropdown on the right.\n\nPlease read the FAQ section at the end for more clarifications.\n\n## Models\n\n### Architecture\n\n[](https://postimg.cc/WtBfpLCy)\n\n<img src=\"https://i.postimg.cc/yYxqP7P7/Hiring-Assignment.png\">\n\n### User (`user`)\n\n| Key | Kind | Notes |\n| --- | --- | --- |\n| `id` | `string` (snowflake) | primary key |\n| `name` | `varchar(64)` | default: null |\n| `email` | `varchar(128)` | unique |\n| `password` | `varchar(64)` | \\- |\n| `created_at` | `datetime` | \\- |\n\n### Community (`community`)\n\n| Key | Kind | Notes |\n| --- | --- | --- |\n| `id` | `string` (snowflake) | primary key |\n| `name` | `varchar`(128) | \\- |\n| `slug` | `varchar`(255) | unique |\n| `owner` | `string` (snowflake) | ref: > `user.id`, relationship: `m2o` |\n| `created_at` | `datetime` | \\- |\n| `updated_at` | `datetime` | \\- |\n\n### Role (`role`)\n\n| Key | Kind | Notes |\n| --- | --- | --- |\n| `id` | `string` (snowflake) | primary key |\n| `name` | `varchar(64)` | unique |\n| `created_at` | `datetime` | \\- |\n| `updated_at` | `datetime` | \\- |\n\n### Member (`member`)\n\n| Key | Kind | Notes |\n| --- | --- | --- |\n| `id` | `string` (snowflake) | primary key |\n| `community` | `string` (snowflake) | ref: > `community.id` |\n| `user` | `string` (snowflake) | ref: > `user.id` |\n| `role` | `string` (snowflake) | ref: > `role.id` |\n| `created_at` | `datetime` | \\- |\n\nNote:  \nSnowflake IDs are just string. Think of them just like UUID. Use our [library](https://npmjs.com/package/@theinternetfolks/snowflake) to generate unique Snowflake IDs . It works exactly like generating UUIDs.\n\n## API Endpoints\n\n### Role\n\n| Name | URL |\n| --- | --- |\n| Create | `POST /v1/role` |\n| Get All | `GET /v1/role` |\n\n### User\n\n| Name | URL |\n| --- | --- |\n| Sign Up | `POST /v1/auth/signup` |\n| Sign in | `POST /v1/auth/signin` |\n| Get Me | `GET /v1/auth/me` |\n\n### Community\n\n| Name | URL |\n| --- | --- |\n| Create | `POST /v1/community` |\n| Get All | `GET /v1/community` |\n| Get All Members | `GET /v1/community/:id/members` |\n| Get My Owned Community | `GET /v1/community/me/owner` |\n| Get My Joined Community | `GET /v1/community/me/member` |\n\n### Member\n\n| Name | URL |\n| --- | --- |\n| Add Member | `POST /v1/member` |\n| Remove Member | `DELETE /v1/member/:id` |\n\n## Output\n\nYou need to provide code that can run these APIs.\n\nUse this link to submit the Assignment - [http://bit.ly/tif-swe-002-round-2-form](http://bit.ly/tif-swe-002-round-2-form)\n\n**Checklist** before submission -\n\n- I have read the description for each API and adhered to the response structure.\n- I have used a database for storing data.\n- I have connected the database to the application using an ORM.\n- I have the URL for GitLab / GitHub Repository, accessible to public.\n- I have deployed the code, and the URL is publicly accessible. (**optional**)\n    \n\n### Frequently Asked Questions?\n\n1. What are `snowflake` in the model description?\nThese are unique IDs generated from our library. It is simply like UUID, or ObjectIDs. These are strings, that contain numbers inside it.\n    \n2. Is hosting the code on Heroku or similar necessary?\nNo, it is purely optional. \n      \n    \n3. What library to use for Validation?\nWe would recommend using `validatorjs`, `ajv` or `joi`. But, you can choose something else too.\n      \n    \n\nDid we miss out on something? If you have more queries, reach out to us at `sameer.khan@theinternetfolks.com`\n\n### Brownie Points\n\nThe following **does not guarantee** your shortlisting for the round, but would add more points to your submission. It is recommended that you play with your strengths to deliver a great submission, and **do not try the following if you do not possess its knowledge**. This is because there is a deadline with the assignment. A great assignment can be one that works and solves the problem statement, and we would prefer a great assignment that does work, than an assignment if any of the below pointers but doesn't work. (**Working Code > Good Code**)\n\nThe following are purely **optional**, but if you feel confident, you can try implement any of them:\n\n- Using Typescript with proper interfaces\n- Using Cookies instead of Authorization Header\n- Using SQL-based Database with an ORM\n- Using MongoDB with MongoDB Native Driver instead of Mongoose\n- Writing Integration Test Cases using `mocha` and `supertest`\n- Writing Unit Test Cases using `mocha` and `chai`\n    \n\n## Disclaimer\n\nYour submitted code will not be used in production. But, writing production-ready code should be the aim of us as developers.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24614273"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "Role",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Community Moderator\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/role",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"role"
+									]
+								},
+								"description": "Create role from the given data.\n\n| **Key** | **Note** |\n| --- | --- |\n| `name` | required, min: 2 |"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Community Admin\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "/v1/role",
+											"path": [
+												"v1",
+												"role"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039871299706947583\",\n      \"name\": \"Community Admin\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\",\n      \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n    }\n  }\n}"
+								},
+								{
+									"name": "Error - Invalid Input",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/role",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"role"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"param\": \"name\",\n      \"message\": \"Name should be at least 2 characters.\",\n      \"code\": \"INVALID_INPUT\"\n    }\n  ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Get All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/role",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"role"
+									]
+								},
+								"description": "List all the data with pagination.\n\n`meta.total` - Total number of documents (eg: 500)\n\n`meta.pages` - Total number of pages (with 10 documents per page, eg: 50)\n\n`meta.page` - Current page number (eg: 1)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/role",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"role"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"meta\": {\n      \"total\": 2,\n      \"pages\": 1,\n      \"page\": 1\n    },\n    \"data\": [\n      {\n        \"id\": \"7039871299706947583\",\n        \"name\": \"Community Admin\",\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039873122358527999\",\n        \"name\": \"Community Member\",\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      }\n    ]\n  }\n}"
+								}
+							]
+						}
+					],
+					"description": "Role is assigned to a person who is a member of the community."
+				},
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Sign Up",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"try {\r",
+											"    const responseJson = pm.response.json();\r",
+											"    console.log(\"Response JSON:\", responseJson);\r",
+											"    const accessToken = responseJson.content.meta.access_token;\r",
+											"    console.log(\"Access token:\", accessToken);\r",
+											"    pm.variables.set(\"ACCESS_TOKEN\", accessToken);\r",
+											"} catch (error) {\r",
+											"    console.error(error);\r",
+											"    pm.test(\"Error parsing response body as JSON\", false);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Soham Shinde\",\n  \"email\": \"sohamshinde04@gmail.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/auth/signup",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"signup"
+									]
+								},
+								"description": "Create a user from the given data. You can use `bcrypt` or any other library to hash and save password.\n\n| **Key** | **Note** |\n| --- | --- |\n| `name` | required, min: 2 |\n| `email` | required, email |\n| `password` | required, min: 6 |\n\nIt should not return `password` in response.\n\nIt should return the access token to sign in in `meta.access_token` field."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Dolores Abernathy\",\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signup",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signup"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039874298864994303\",\n      \"name\": \"Dolores Abernathy\",\n      \"email\": \"dolores@westworld.com\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\"\n    },\n    \"meta\": {\n      \"access_token\": \"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIyMDIwLTAxLTAxVDAwOjAwOjAwLjAwMFoiLCJpZCI6IjcwMzk4NzQyOTg4NjQ5OTQzMDMiLCJleHAiOiIyMDIwLTAxLTAyVDAwOjAwOjAwLjAwMFoifQ.0WNbCXm8hZBPmib5Q-d1RNJWLoNsHj1AGtfHtcCguI0\"\n    }\n  }\n}"
+								},
+								{
+									"name": "Error - Invalid Input",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"\",\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signup",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signup"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"name\",\n            \"message\": \"Name should be at least 2 characters.\",\n            \"code\": \"INVALID_INPUT\"\n        }\n    ]\n}"
+								},
+								{
+									"name": "Error - Strong Password",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"\",\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vG\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signup",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signup"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"name\",\n            \"message\": \"Name should be at least 2 characters.\",\n            \"code\": \"INVALID_INPUT\"\n        },\n        {\n            \"param\": \"password\",\n            \"message\": \"Password should be at least 2 characters.\",\n            \"code\": \"INVALID_INPUT\"\n        }\n    ]\n}"
+								},
+								{
+									"name": "Error - Account Exists",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Dolores Abernathy\",\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signup",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signup"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"email\",\n            \"message\": \"User with this email address already exists.\",\n            \"code\": \"RESOURCE_EXISTS\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Sign In",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// pm.test(\"Status test\", function () {\r",
+											"//     pm.response.to.have.status(200);\r",
+											"//     try {\r",
+											"//         const responseJson = pm.response.json();\r",
+											"//         console.log(\"Response JSON:\", responseJson);\r",
+											"//         const accessToken = responseJson.content.meta.access_token;\r",
+											"//         console.log(\"Access token:\", accessToken);\r",
+											"//         pm.variables.set(\"ACCESS_TOKEN\", accessToken);\r",
+											"//     } catch (error) {\r",
+											"//         console.error(error);\r",
+											"//         pm.test(\"Error parsing response body as JSON\", false);\r",
+											"//     }\r",
+											"//     // Get the value of the ACCESS_TOKEN variable\r",
+											"//     const accessToken = pm.environment.get(\"ACCESS_TOKEN\");\r",
+											"\r",
+											"//     // Check if the ACCESS_TOKEN variable is set\r",
+											"//     if (!accessToken) {\r",
+											"//         console.log(\"ACCESS_TOKEN variable is not set\");\r",
+											"//     }\r",
+											"\r",
+											"// });"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/auth/signin",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"signin"
+									]
+								},
+								"description": "Sign in user from the valid crdentials given by them. You can use `bcrypt` or any other library to verify hash of the saved password.\n\nIt should not return `password` in the response.\n\nIt should return the token to sign in, in `meta.access_token` field."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signin",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signin"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039874298864994303\",\n      \"name\": \"Dolores Abernathy\",\n      \"email\": \"dolores@westworld.com\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\"\n    },\n    \"meta\": {\n      \"access_token\": \"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIyMDIwLTAxLTAxVDAwOjAwOjAwLjAwMFoiLCJpZCI6IjcwMzk4NzQyOTg4NjQ5OTQzMDMiLCJleHAiOiIyMDIwLTAxLTAyVDAwOjAwOjAwLjAwMFoifQ.0WNbCXm8hZBPmib5Q-d1RNJWLoNsHj1AGtfHtcCguI0\"\n    }\n  }\n}"
+								},
+								{
+									"name": "Error - Invalid Input",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"dolores\",\n  \"password\": \"vGuFQ1nJSSrdMaYV1LiN3G1i\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signin",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signin"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"email\",\n            \"message\": \"Please provide a valid email address.\",\n            \"code\": \"INVALID_INPUT\"\n        }\n    ]\n}"
+								},
+								{
+									"name": "Error - Invalid Credentials",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"dolores@westworld.com\",\n  \"password\": \"wrongpassword\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/signin",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"signin"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"password\",\n            \"message\": \"The credentials you provided are invalid.\",\n            \"code\": \"INVALID_CREDENTIALS\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Me",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/auth/me",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"me"
+									]
+								},
+								"description": "Should return the details on the currently signed in user, using the access token.\n\nIt should not return the `password` in response."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "Passing the access token here as a Bearer Token",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/me",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"me"
+											]
+										}
+									},
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039874298864994303\",\n      \"name\": \"Dolores Abernathy\",\n      \"email\": \"dolores@westworld.com\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\"\n    }\n  }\n}"
+								},
+								{
+									"name": "Error - Not Signed In",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/auth/me",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"auth",
+												"me"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"message\": \"You need to sign in to proceed.\",\n            \"code\": \"NOT_SIGNEDIN\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Community",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Mumbai Indians\",\n    \"slug\": \"Khelo 100%\",\n    \"owner\": \"7057360656386024800\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/community",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"community"
+									]
+								},
+								"description": "Create a community from the given data.\n\n| **Key** | **Note** |\n| --- | --- |\n| `name` | required, min: 2 |\n| `slug` | autogenerated from name |\n| `owner` | id of the person signed in |\n\n**Important:**\n\nThe person who creates the community should be added as `owner` in the community. They should also **be added with the role Community Admin** as the first member of the community."
+							},
+							"response": [
+								{
+									"name": "Error - Invalid Input",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"We\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"param\": \"name\",\n            \"message\": \"Name should be at least 2 characters.\",\n            \"code\": \"INVALID_INPUT\"\n        }\n    ]\n}"
+								},
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"Westworld\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039920812358371327\",\n      \"name\": \"Westworld\",\n      \"slug\":\"westworld\",\n      \"owner\": \"7039874298864994303\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\",\n      \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n    }\n  }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/community",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"community"
+									]
+								},
+								"description": "List all the data with pagination.\n\nThe user who is the `owner` should be expanded into an object, to know their details. Only `id` and `name` should be expanded inside the `owner` attribute, as we do not want to reveal the email, password and other fields of the user.\n\n`meta.total` - Total number of documents (eg: 500)\n\n`meta.pages` - Total number of pages (with 10 documents per page, eg: 50)\n\n`meta.page` - Current page number (eg: 1)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"meta\": {\n      \"total\": 3,\n      \"pages\": 1,\n      \"page\": 1\n    },\n    \"data\": [\n      {\n        \"id\": \"7039920812358371327\",\n        \"name\": \"Westworld\",\n        \"slug\": \"westworld\",\n        \"owner\": {\n          \"id\": \"7039874298864994303\",\n          \"name\": \"Dolores Abernathy\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039921751504979967\",\n        \"name\": \"Delos Community\",\n        \"slug\": \"delos-community\",\n        \"owner\": {\n          \"id\": \"7039921766419924991\",\n          \"name\": \"Robert Ford\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039922116220684287\",\n        \"name\": \"Delos Investors\",\n        \"slug\": \"delos-investors\",\n        \"owner\": {\n          \"id\": \"7039921766419924991\",\n          \"name\": \"Robert Ford\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      }\n    ]\n  }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get All Members",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/community/:id/members",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"community",
+										":id",
+										"members"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "7057419490860053133"
+										}
+									]
+								},
+								"description": "List all the data with pagination.\n\nThe `community` is know so it will not be expanded. The `role`and `user` should be expanded to know its details. Only `id` and `name` should be expanded inside the `user` attribute, as we do not want to reveal the email, password and other fields of the user.\n\n`meta.total` - Total number of documents (eg: 500)\n\n`meta.pages` - Total number of pages (with 10 documents per page, eg: 50)\n\n`meta.page` - Current page number (eg: 1)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community/:id/members",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community",
+												":id",
+												"members"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "westworld"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"meta\": {\n      \"total\": 2,\n      \"pages\": 1,\n      \"page\": 1\n    },\n    \"data\": [\n      {\n        \"id\": \"7039923251111266303\",\n        \"community\": \"7039920812358371327\",\n        \"user\": {\n          \"id\": \"7039874298864994303\",\n          \"name\": \"Dolores Abernathy\"\n        },\n        \"role\": {\n          \"id\": \"7039871299706947583\",\n          \"name\": \"Community Admin\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039923591432898559\",\n        \"community\": \"7039920812358371327\",\n        \"user\": {\n          \"id\": \"7039921766419924991\",\n          \"name\": \"Robert Ford\"\n        },\n        \"role\": {\n          \"id\": \"7039873122358527999\",\n          \"name\": \"Community Member\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039923726313326591\",\n        \"community\": \"7039920812358371327\",\n        \"user\": {\n          \"id\": \"7039923743962957823\",\n          \"name\": \"Maeve Millay\"\n        },\n        \"role\": {\n          \"id\": \"7039873122358527999\",\n          \"name\": \"Community Member\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039923868705753087\",\n        \"community\": \"7039920812358371327\",\n        \"user\": {\n          \"id\": \"7039923853975357439\",\n          \"name\": \"Bernard Lowe\"\n        },\n        \"role\": {\n          \"id\": \"7039873122358527999\",\n          \"name\": \"Community Member\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\"\n      }\n    ]\n  }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get My Owned Community",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/community/me/owner",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"community",
+										"me",
+										"owner"
+									]
+								},
+								"description": "List all the data with pagination.\n\nSince, the `owner` is known, which is the currently signed in user, it will not expanded.\n\n`meta.total` - Total number of documents (eg: 500)\n\n`meta.pages` - Total number of pages (with 10 documents per page, eg: 50)\n\n`meta.page` - Current page number (eg: 1)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community/me/owner",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community",
+												"me",
+												"owner"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"meta\": {\n      \"total\": 1,\n      \"pages\": 1,\n      \"page\": 1\n    },\n    \"data\": [\n      {\n        \"id\": \"7039920812358371327\",\n        \"name\": \"Westworld\",\n        \"slug\": \"westworld\",\n        \"owner\": \"7039874298864994303\",\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      }\n    ]\n  }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get My Joined Community",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/community/me/member",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"community",
+										"me",
+										"member"
+									]
+								},
+								"description": "List all the data with pagination.\n\nThe user who is the `owner` should be expanded into an object, to know their details. Only `id` and `name` should be expanded inside the `owner` attribute, as we do not want to reveal the email, password and other fields of the user.\n\n`meta.total` - Total number of documents (eg: 500)\n\n`meta.pages` - Total number of pages (with 10 documents per page, eg: 50)\n\n`meta.page` - Current page number (eg: 1)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/community/me/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"community",
+												"me",
+												"member"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"meta\": {\n      \"total\": 3,\n      \"pages\": 1,\n      \"page\": 1\n    },\n    \"data\": [\n      {\n        \"id\": \"7039920812358371327\",\n        \"name\": \"Westworld\",\n        \"slug\": \"westworld\",\n        \"owner\": {\n          \"id\": \"7039874298864994303\",\n          \"name\": \"Dolores Abernathy\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039921751504979967\",\n        \"name\": \"Delos Community\",\n        \"slug\": \"delos-community\",\n        \"owner\": {\n          \"id\": \"7039921766419924991\",\n          \"name\": \"Robert Ford\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      },\n      {\n        \"id\": \"7039922116220684287\",\n        \"name\": \"Delos Investors\",\n        \"slug\": \"delos-investors\",\n        \"owner\": {\n          \"id\": \"7039921766419924991\",\n          \"name\": \"Robert Ford\"\n        },\n        \"created_at\": \"2020-01-01T00:00:00.000Z\",\n        \"updated_at\": \"2020-01-01T00:00:00.000Z\"\n      }\n    ]\n  }\n}"
+								}
+							]
+						}
+					],
+					"description": "Community is created by a user. User can join the community and become the member. The user creating the community becomes the first member with the role `Community Admin`, the rest of the users become `Community Member`.\n\n| Key | Kind | Notes |\n| --- | --- | --- |\n| `id` | `snowflake` | primary key |\n| `name` | `varchar`(128) | \\- |\n| `slug` | `varchar`(255) | unique |\n| `owner` | `snowflake` | ref: > `user.id`, relationship: `m2o` |\n| `created_at` | `datetime` | \\- |\n| `updated_at` | `datetime` | \\- |"
+				},
+				{
+					"name": "Member",
+					"item": [
+						{
+							"name": "Add Member",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"community\": \"7057419490860053133\",\n  \"user\": \"7057419766166785011\",\n  \"role\": \"7057411997205171909\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/member",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"member"
+									]
+								},
+								"description": "Add a member using the following data.\n\n| **Key** | **Note** |\n| --- | --- |\n| `community` | id of the community, required |\n| `user` | id of the user, required |\n| `role` | id of the role, required |\n\nOnly `Community Admin` can add user. Other roles will be thrown the `NOT_ALLOWED_ACCESS` error."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true,\n  \"content\": {\n    \"data\": {\n      \"id\": \"7039929260764563455\",\n      \"community\": \"7039920812358371327\",\n      \"user\": \"7039921766419924991\",\n      \"role\": \"7039873122358527999\",\n      \"created_at\": \"2020-01-01T00:00:00.000Z\"\n    }\n  }\n}"
+								},
+								{
+									"name": "Error - Member Already Added",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": false,\n    \"errors\": [\n        {\n            \"message\": \"User is already added in the community.\",\n            \"code\": \"RESOURCE_EXISTS\"\n        }\n    ]\n}"
+								},
+								{
+									"name": "Error - Community Not Found",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"param\": \"community\",\n      \"message\": \"Community not found.\",\n      \"code\": \"RESOURCE_NOT_FOUND\"\n    }\n  ]\n}"
+								},
+								{
+									"name": "Error - Role Not Found",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"param\": \"role\",\n      \"message\": \"Role not found.\",\n      \"code\": \"RESOURCE_NOT_FOUND\"\n    }\n  ]\n}"
+								},
+								{
+									"name": "Error - User Not Found",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"param\": \"user\",\n      \"message\": \"User not found.\",\n      \"code\": \"RESOURCE_NOT_FOUND\"\n    }\n  ]\n}"
+								},
+								{
+									"name": "Error - Not Allowed Access",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"community\": \"7039920812358371327\",\n  \"user\": \"7039921766419924991\",\n  \"role\": \"7039873122358527999\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"message\": \"You are not authorized to perform this action.\",\n      \"code\": \"NOT_ALLOWED_ACCESS\"\n    }\n  ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Remove Member",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{ENDPOINT}}/v1/member/:id",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v1",
+										"member",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "7057419979355483703"
+										}
+									]
+								},
+								"description": "Only `Community Admin` and `Community Moderator` can remove user. Other roles will be thrown the `NOT_ALLOWED_ACCESS` error."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member/:id",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "7039929260764563455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": true\n}"
+								},
+								{
+									"name": "Error - Member Not Found",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{ENDPOINT}}/v1/member/:id",
+											"host": [
+												"{{ENDPOINT}}"
+											],
+											"path": [
+												"v1",
+												"member",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "7039929260764563455"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json",
+											"name": "Content-Type",
+											"description": "",
+											"type": "text"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"status\": false,\n  \"errors\": [\n    {\n      \"message\": \"Member not found.\",\n      \"code\": \"RESOURCE_NOT_FOUND\"\n    }\n  ]\n}"
+								}
+							]
+						}
+					],
+					"description": "A user when added to a community and assigned a role in it, is called a member."
+				}
+			],
+			"description": "All the APIs under the Version 1 of the code comes here."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"try {",
+					"    const responseJson = pm.response.json();",
+					"    console.log(\"Response JSON:\", responseJson);",
+					"    const accessToken = responseJson.content.meta.access_token;",
+					"    console.log(\"Access token:\", accessToken);",
+					"    pm.variables.set(\"ACCESS_TOKEN\", accessToken);",
+					"} catch (error) {",
+					"    console.error(error);",
+					"    pm.test(\"Error parsing response body as JSON\", false);",
+					"}",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ENDPOINT",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ACCESS_TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIyMDIwLTAxLTAxVDAwOjAwOjAwLjAwMFoiLCJpZCI6IjcwMzk4NzQyOTg4NjQ5OTQzMDMiLCJleHAiOiIyMDIwLTAxLTAyVDAwOjAwOjAwLjAwMFoifQ.0WNbCXm8hZBPmib5Q-d1RNJWLoNsHj1AGtfHtcCguI0",
+			"type": "string"
+		}
+	]
+}
