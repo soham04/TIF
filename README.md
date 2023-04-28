@@ -1,4 +1,5 @@
 
+
 # Community API
 This is an API for managing communities, members, and roles. It provides endpoints for creating and managing communities, adding and removing members, and creating and managing roles.
 
@@ -19,10 +20,9 @@ For any questions contact : +919819035520 | sohamshinde04@gmail.com
 
 The corresponding SQL Database could be viewed by using the folowwing credentials : 
 
-host : database-2.c4mogjfnbtpq.ap-northeast-1.rds.amazonaws.com
-username : tifviewer
-password : viewer
-
+ - host : database-2.c4mogjfnbtpq.ap-northeast-1.rds.amazonaws.com
+ - username : tifviewer 
+ - password : viewer
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
