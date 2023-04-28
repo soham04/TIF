@@ -17,6 +17,11 @@ For any questions contact : +919819035520 | sohamshinde04@gmail.com
 |  7057411997205171909| Community Member|Member, Manage Community  | 2023-04-27 17:21:50 | 2023-04-27 17:21:50 |
 |  7057403484213289414| Community Moderator|Moderator, Manage Community  | 2023-04-27 17:21:50 | 2023-04-27 17:21:50 |
 
+The corresponding SQL Database could be viewed by using the folowwing credentials : 
+host : database-2.c4mogjfnbtpq.ap-northeast-1.rds.amazonaws.com
+username : tifviewer
+password : viewer
+
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
